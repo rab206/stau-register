@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audi Configurator</title>
+  <link rel="stylesheet" href="//unpkg.com/tachyons@4.6.1/css/tachyons.min.css"/>
+  <style type='text/css'>
+    body {
+      overflow: hidden;
+      background: #FFF;
+    }
+    nav {
+      background-color: rgb(51, 65, 78);
+    }
+    @font-face {
+        font-family: "audiType_extended_bold";
+        src: url(fa69df9358792c6df532f4a0b15c5ebb.woff) format("woff");
+        font-weight: normal
+    }
+    
+    @font-face {
+        font-family: "audiType_extended_bold";
+        src: url(fa69df9358792c6df532f4a0b15c5ebb.woff) format("woff");
+        font-weight: bold
+    }
+    
+    @font-face {
+        font-family: "audiType_bold";
+        src: url(8e139687529899a2fdaad2463fd2d453.woff) format("woff");
+        font-weight: normal
+    }
+    
+    @font-face {
+        font-family: "audiType_bold";
+        src: url(8e139687529899a2fdaad2463fd2d453.woff) format("woff");
+        font-weight: bold
+    }
+    
+    @font-face {
+        font-family: "audiType_extended_normal";
+        src: url(ddaa70e4850aa8a71828ea2c37574481.woff) format("woff");
+        font-weight: normal
+    }
+    
+    @font-face {
+        font-family: "audiType_extended_normal";
+        src: url(ddaa70e4850aa8a71828ea2c37574481.woff) format("woff");
+        font-weight: bold
+    }
+    
+    @font-face {
+        font-family: "audiType_normal";
+        src: url(22d02a5ecba352b4f68b523df79dd92f.woff) format("woff");
+        font-weight: normal
+    }
+    
+    @font-face {
+        font-family: "audiType_normal";
+        src: url(22d02a5ecba352b4f68b523df79dd92f.woff) format("woff");
+        font-weight: bold
+    }
+    .f-audi {
+      font-family: AudiTypeExtendedBold,Verdana,sans-serif;
+    }
+    .f-audi-n {
+      font-family: audiType_normal;
+    }
+    .f-audi-en {
+      font-family: audiType_extended_normal;
+    }
+    .audi-grey {
+      color: #555;
+    }
+    .opt-img {
+      max-height: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="dt w-100 pa2 ph5-ns">
+    <div class="dtc v-mid mid-gray dim tr w-10">
+      <img class="dib w3 h2" src="https://www.audi.co.uk/etc/audi-ui/global/img/audi-logo.svg">
+    </div>
+    <div class="dtc v-mid w-85 pl2">
+      <h1 class="white f-audi-n normal f4 dib ma2 mr4-ns">Audi Configurator for Chromecast</h1>
+    </div>
+  </nav>
+  <div class="fl w-100 mv3">
+    <img id="image" src="">
+    <h3 class="tc f3 f-audi audi-grey ma2">Selected Options</h3>
+    <div id="options" class="cf"></div>
+  </div>
+  <script type='text/javascript' src='//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js'></script>
+  <script type='text/javascript'>
+    /* global cast, castReceiverManager */
+    window.onload = function() {
+      window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+
+      castReceiverManager.onReady = function(event) {
+        window.castReceiverManager.setApplicationState('URL Cast ready...');
+      };
+
+      // messages on a custom namespace
+      var ns = 'urn:x-cast:com.url.cast';
+      window.messageBus = window.castReceiverManager.getCastMessageBus(ns);
+
+      var savedImage;
+      
+      window.messageBus.onMessage = function(e) {
+        var msg = JSON.parse(e.data);
+        if(savedImage != msg.url){
+          savedImage = msg.url;
+          window.messageBus.send(e.senderId, 'ok');
+          processMessage(msg);
+        }
+      };
+
+      // initialize CastReceiverManager
+      window.castReceiverManager.start({
+        statusText: 'URL Cast starting...'
+      });
+      processMessage({"selectedOptions":[{"image":"//mediaservice.audi.com/media/cdb/data/cc58c9d5-0be1-40b4-bc8b-d952ef2524af.jpg?_U=ak-develop&_X=1485482508717&_S=u47B4168BED48D57352113454B5EEA5FAF36E85BFC4F97A2D649E154190C48567FCDAA701A24247E6BB46E6E2252505CA1AA521C2031A12C47AD5AA1BFD37A187","family":"Pearl effect paint finishes"},{},{"image":"//mediaservice.audi.com/media/cdb/data/ce37ff82-2a69-475f-941f-2da8b84d9861.png?_U=ak-develop&_X=1485482508245&_S=u82EB3A28971AEEF0D8995E85328293C442F0EE145B32B7E5B4B7772C559856A538B530C80530FE09E81536453C8D5BFA1FD32402EE9150D9E6E09CA54A015739","family":"Engine"}],"url":"//mediaservice.audi.com/media/live/50500/n3c02/4s30be-0/2017/14+6y6y/ata1x1/bbo6fq/eph7x2/hsw8it/zie4zc.jpeg"})
+    };
+    
+    function processMessage(msg){
+      updateFrame(msg.url);
+      updateDetails(msg);
+    }
+
+    function updateDetails(msg) {
+      var options = `<ul class="mv1">`;
+      for (var opt of msg.selectedOptions) {
+        if (opt.image) {
+          options +=
+              `<div class="mh3">
+                <article class="mw5 w-50 bg-white br3 pa3 pa3-ns mh3 ba b--black-10 bw1 fl w-50 w-25-m w-20-l">
+                  <div class="tc">
+                    <h1 class="f6 mb1 mt1 f-audi-en audi-grey normal">${opt.family}</h1>
+                    <img src="${opt.image}" class="pa2 opt-img"">
+                  </div>
+                </article> 
+              </div>`;
+        }
+      }
+      options += '</ul>';
+      document.getElementById("options").innerHTML = options;
+    }
+
+    function updateFrame(url) {
+      window.castReceiverManager.setApplicationState('Now Playing: ' + url);
+      document.getElementById('image').src = url;
+    }
+  </script>
+  <script id="__bs_script__">//<![CDATA[
+    document.write("<script async src='https://HOST:8082/browser-sync/browser-sync-client.js?v=2.18.8'><\/script>".replace("HOST", location.hostname));
+//]]></script>
+</body>
+</html>
