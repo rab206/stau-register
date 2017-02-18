@@ -5,18 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>St Albans Training Register</title>
   <link rel="stylesheet" href="//unpkg.com/tachyons@4.6.1/css/tachyons.min.css" />
+  <link rel="manifest" href="/manifest.json">
   <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
   <style type='text/css'>
     body {
       background: #FFF;
+      font-family: Roboto, Arial, sans-serif;
     }
     
     nav {
-      background-color: #afbfbf;
-    }
-    
-    body {
-      font-family: Roboto, Arial, sans-serif;
+      background: #c0c0c0;
     }
   </style>
 </head>
@@ -24,7 +22,7 @@
 <body>
   <nav class="dt w-100 pa2 ph5-ns">
     <div class="dtc v-mid mid-gray dim tr">
-      <img class="dib h2" src="//stalbansultimate.co.uk/img/eagle_logo_s.png">
+      <img alt="St Albans Ultimate logo" class="dib h2" src="//stalbansultimate.co.uk/img/eagle_logo_s.png">
     </div>
     <div class="dtc v-mid w-85 pl2">
       <h1 class="white normal f4 dib ma2 mr4-ns">St Albans Training Register</h1>
@@ -65,7 +63,7 @@
         </div>
         <small id="people-desc" class="f6 black-60 db mb2">Search for people (or write their full name if they are not found) and then click add</small>
         <datalist id="peopleList"></datalist>
-
+        <p>Balances last updated: <span id="lastUpdated"></span></p>
         <div class="pa0 pv2">
           <div class="overflow-auto">
             <table class="f6 w-100 mw8 center" cellspacing="0">
@@ -83,59 +81,83 @@
         </div>
       </div>
       <div class="mt3"><input id="submit" class="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6" type="submit" value="Submit"></div>
+      <div id="warning" class="mt3 red dn">
+        <h4 class="mv0">Email has already been opened - <span class="i">Make sure you send the email!</span></h4>
+        <p class="mv0">If you want to update the list then click submit again, otherwise just close this</p>
+      </div>
     </form>
   </div>
   <script type='text/javascript'>
     /* global */
+    var tempscript = document.createElement("script");
     window.onload = function() {
+      // set the date field to today's date by default
       document.getElementById('date').valueAsDate = new Date();
 
-      var tempscript = document.createElement("script");
+      // fetch the data from google sheets
+      
       tempscript.type = "text/javascript";
       tempscript.id = "tempscript";
-      tempscript.src = "https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/1/public/values?alt=json-in-script&callback=onComplete";
+      tempscript.src = "https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/2/public/values?alt=json-in-script&callback=onComplete";
       document.body.appendChild(tempscript);
     };
 
-    var people, peopleMap;
-    var peopleList = [];
-    var peopleField = document.getElementById('people');
-    var dataList = document.getElementById('peopleList');
-    var addedPeople = document.getElementById('addedPeople');
+    var peopleMap = {}; // object of all people, name and balance
+    var attendeeList = []; // list of all attendees
+    var peopleField = document.getElementById('people'); // field where person's name is entered
+    var dataList = document.getElementById('peopleList'); // list of people to show in drop down
+    var addedPeople = document.getElementById('addedPeople'); // table to show added people
 
+    // callback when google sheet loads
     function onComplete(data) {
-      console.log(data);
-      people = data.feed.entry;
-      var options = "";
-      peopleMap = {};
+      // show the last updated date
+      var lastUpdated = new Date(data.feed.updated.$t);
+      document.getElementById("lastUpdated").textContent = lastUpdated.toDateString();
+      
+      // extract the data we want (full name and balance) and discard the rest
+      var people = data.feed.entry.map(p => {
+        // only keep the row if it's not empty
+        if (p.gsx$firstname.$t.trim()) {
+          var name = p.gsx$firstname.$t.trim() + " " + p.gsx$surname.$t.trim();
+          var newP = {
+            name,
+            balance: p.gsx$balance.$t
+          };
+          peopleMap[name] = newP;
+          return newP;
+        }
+      });
+
+      // sort the names alphabetically
       people.sort(function compare(a, b) {
-        var nameA = a.gsx$name.$t.toUpperCase(); // ignore upper and lowercase
-        var nameB = b.gsx$name.$t.toUpperCase(); // ignore upper and lowercase
+        var nameA = a.name.toUpperCase();
+        var nameB = b.name.toUpperCase();
         if (nameA < nameB) {
           return -1;
         }
         if (nameA > nameB) {
           return 1;
         }
-        // names must be equal
         return 0;
       });
+      var options = ''; // populate list of options
       people.map(p => {
-        var name = p.gsx$name.$t;
-        options += `<option value="${name}">`;
-        peopleMap[name] = {
-          name,
-          balance: p.gsx$balance2017.$t
-        };
+        options += `<option value="${p.name}">`;
       });
       dataList.innerHTML = options;
       peopleField.placeholder = "type name...";
+      tempscript.remove();
     }
-
+    
+    // add the current person to the attendee list
     document.getElementById('addPerson').onclick = () => {
       var name = peopleField.value;
-      if (!peopleList.includes(name)) {
-        var balance = "Unknown user";
+      // if they're not already on the list add them
+      if (!attendeeList.includes(name)) {
+        // if the person exists in the spreadsheet we show their balance, if not we show "New person"
+        var balance = "New person";
+        
+        // highlight the people with a negative balance
         var rowClass = "";
         if (peopleMap[name]) {
           balance = peopleMap[name].balance;
@@ -144,36 +166,40 @@
           }
           balance = "£" + balance;
         }
+        // add the person to the table
         addedPeople.insertAdjacentHTML("beforeend",
           `<tr class="stripe-dark ${rowClass}">
           <td class="pa3">${name}</td>
           <td class="pa3">${balance}</td>
           <td class="pa3"><input onClick="removePerson(this, '${name}')" class="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6" type="button" value="Remove"></td>
         </tr>`);
-        peopleList.push(name);
+        attendeeList.push(name);
       }
+      // reset the search field
       peopleField.value = "";
     };
 
+    // remove an attendee
+    // element is the button clicked on, name is the name of the person
     function removePerson(element, name) {
-      console.log(element, name);
-      element.parentElement.parentElement.remove()
-      peopleList.splice(peopleList.indexOf(name), 1);
+      // delete from table
+      element.parentElement.parentElement.remove();
+      // delete from attendee list
+      attendeeList.splice(attendeeList.indexOf(name), 1);
+    }
 
-    }
-    
-    function generatePeopleList() {
-      return peopleList.join('\r\n');
-    }
-    
+    // on submit prevent page submit and open email app instead
     document.getElementById('form').addEventListener("submit", (e) => {
+      // prevent page submit
       e.preventDefault();
+      
+      // construct the mail to request
       var email = 'treasurer@stalbansultimate.co.uk';
       var date = document.getElementById('date').value;
       var name = document.getElementById('name').value;
       var comment = document.getElementById('comment').value;
       var subject = `Register for  ${date}`;
-      var emailBody = 
+      var emailBody =
 `Hi Treasurer,\r\n
 Here is the register for ${date}.\r\n
 \r\n
@@ -185,14 +211,25 @@ ${peopleList.join('\r\n')}\r\n
 Thanks,\r\n
 ${name}\r\n
 `;
-      window.location.href = "mailto:"+email+"?subject="+subject+"&body="+encodeURIComponent(emailBody);
+      window.location.href = "mailto:" + email + "?subject=" + subject + "&body=" + encodeURIComponent(emailBody);
+      // show the warning that email has been opened
+      document.getElementById('warning').classList.remove('dn');
     });
   </script>
-  <script id="__bs_script__">
-    //<![CDATA[
-    document.write("<script async src='https://HOST:8082/browser-sync/browser-sync-client.js?v=2.18.8'><\/script>".replace("HOST", location.hostname));
-    //]]>
+  <script>
+    /* global navigator */
+    // add service worker so requests are cached offline and we get add to homescreen functionality
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+          // Registration was successful
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }).catch(function(err) {
+          // registration failed :(
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
   </script>
 </body>
-
 </html>
