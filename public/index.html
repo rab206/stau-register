@@ -161,10 +161,12 @@
         var rowClass = "";
         if (peopleMap[name]) {
           balance = peopleMap[name].balance;
+          balance = "£" + balance;
           if (balance.includes('(')) {
             rowClass = "red";
+            balance = "-£" + balance.substring(2,balance.length-1);
           }
-          balance = "£" + balance;
+          
         }
         // add the person to the table
         addedPeople.insertAdjacentHTML("beforeend",
