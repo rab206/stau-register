@@ -77,15 +77,15 @@ function onComplete(data) {
 
   var datalistSupported = !!(document.createElement('datalist') && window.HTMLDataListElement);
 
-  if(!datalistSupported) {
+  // if(!datalistSupported) {
     var polyfill = document.createElement("script");
     polyfill.type = "text/javascript";
     polyfill.id = "polyfill";
     polyfill.src = "datalist-polyfill.js";
     document.body.appendChild(polyfill);
-    var style = 'style>.datalist-polyfill{list-style:none;display:none;background:#fff;box-shadow:0 2px 2px #999;position:absolute;left:0;top:0;margin:0;padding:0;max-height:300px;overflow-y:auto}.datalist-polyfill:empty{display:none!important}.datalist-polyfill>li{padding:3px;font:13px "Lucida Grande",Sans-Serif}.datalist-polyfill__active{background:#3875d7;color:#fff}</style>';
+    var style = '<style>.datalist-polyfill{list-style:none;display:none;background:#fff;box-shadow:0 2px 2px #999;position:absolute;left:0;top:0;margin:0;padding:0;max-height:300px;overflow-y:auto}.datalist-polyfill:empty{display:none!important}.datalist-polyfill>li{padding:3px;font:13px "Lucida Grande",Sans-Serif}.datalist-polyfill__active{background:#3875d7;color:#fff}</style>';
     document.body.insertAdjacentHTML('beforeend', style);
-  }
+  // }
 }
 
 // add the current person to the attendee list
