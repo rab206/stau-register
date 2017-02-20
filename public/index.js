@@ -101,7 +101,7 @@ peopleField.oninput = () => {
 function addPerson() {
   var name = peopleField.value;
   // if they're not already on the list add them
-  if (!attendeeList.includes(name)) {
+  if (name && !attendeeList.includes(name)) {
     // if the person exists in the spreadsheet we show their balance, if not we show "New person"
     var balance = "New person";
 
