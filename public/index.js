@@ -38,14 +38,14 @@ function onComplete(data) {
   document.getElementById("lastUpdated").textContent = lastUpdated.toDateString();
 
   // only keep the row if the name is not empty
-  var people = data.feed.entry.filter(function(p) {
+  var people = data.feed.entry.filter(p => {
     return p.gsx$firstname.$t.trim() ? true : false;
   });
   // extract the data we want (full name and balance) and discard the rest
-  people = people.map(function(p)  {
+  people = people.map(p => {
     var name = p.gsx$firstname.$t.trim() + " " + p.gsx$surname.$t.trim();
     var newP = {
-      name: name,
+      name,
       balance: p.gsx$balance.$t
     };
     peopleMap[name] = newP;
@@ -65,7 +65,7 @@ function onComplete(data) {
     return 0;
   });
   var options = '<!--[if lte IE 9]><select data-datalist="peopleList"><![endif]-->'; // populate list of options
-  people.map(function(p) {
+  people.map(p => {
     peopleList.push(p.name);
     options += `<option value="${p.name}">`;
   });
@@ -77,50 +77,21 @@ function onComplete(data) {
 
   var datalistSupported = !!(document.createElement('datalist') && window.HTMLDataListElement);
 
-  // if(!datalistSupported) {
-  var polyfill = document.createElement("script");
-  polyfill.type = "text/javascript";
-  polyfill.id = "polyfill";
-  polyfill.src = "datalist-polyfill.js";
-  document.body.appendChild(polyfill);
-  var style =
-    `<style>
-  .datalist-polyfill {
-    list-style: none;
-    display: none;
-    background: white;
-    box-shadow: 0 2px 2px #999;
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: 0;
-    padding: 0;
-    max-height: 300px;
-    overflow-y: auto;
+  if(!datalistSupported) {
+    var polyfill = document.createElement("script");
+    polyfill.type = "text/javascript";
+    polyfill.id = "polyfill";
+    polyfill.src = "datalist-polyfill.js";
+    document.body.appendChild(polyfill);
+    var style = 'style>.datalist-polyfill{list-style:none;display:none;background:#fff;box-shadow:0 2px 2px #999;position:absolute;left:0;top:0;margin:0;padding:0;max-height:300px;overflow-y:auto}.datalist-polyfill:empty{display:none!important}.datalist-polyfill>li{padding:3px;font:13px "Lucida Grande",Sans-Serif}.datalist-polyfill__active{background:#3875d7;color:#fff}</style>';
+    document.body.insertAdjacentHTML('beforeend', style);
   }
-  
-  .datalist-polyfill:empty {
-    display: none !important;
-  }
-  
-  .datalist-polyfill>li {
-    padding: 3px;
-    font: 13px "Lucida Grande", Sans-Serif;
-  }
-  
-  .datalist-polyfill__active {
-    background: #3875d7;
-    color: white;
-  }
-</style>`;
-  document.body.insertAdjacentHTML('beforeend', style);
-  // }
 }
 
 // add the current person to the attendee list
 document.getElementById('addPerson').onclick = addPerson;
 
-peopleField.oninput = function() {
+peopleField.oninput = () => {
   var val = peopleField.value;
   if (peopleList.includes(val)) {
     addPerson();
@@ -171,7 +142,7 @@ function removePerson(element, name) {
 }
 
 // on submit prevent page submit and open email app instead
-document.getElementById('form').addEventListener("submit", function(e) {
+document.getElementById('form').addEventListener("submit", (e) => {
   // prevent page submit
   e.preventDefault();
 
