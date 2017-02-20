@@ -149,7 +149,6 @@ document.getElementById('form').addEventListener("submit", (e) => {
   // construct the mail to request
   var email = 'treasurer@stalbansultimate.co.uk';
   var date = document.getElementById('date').value;
-  var name = document.getElementById('name').value;
   var comment = document.getElementById('comment').value;
   var subject = `Register for  ${date}`;
   var emailBody =
@@ -161,9 +160,7 @@ Comment: ${comment}\r\n
 Register;
 ${attendeeList.join('\r\n')}\r\n
 \r\n
-Thanks,\r\n
-${name}\r\n
-`;
+Thanks`;
   window.location.href = "mailto:" + email + "?subject=" + subject + "&body=" + encodeURIComponent(emailBody);
   // show the warning that email has been opened
   document.getElementById('warning').classList.remove('dn');
