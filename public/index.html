@@ -3,6 +3,7 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8"/>
   <title>St Albans Training Register</title>
   <link rel="stylesheet" href="//unpkg.com/tachyons@4.6.1/css/tachyons.min.css" />
   <link rel="manifest" href="/manifest.json">
@@ -21,7 +22,7 @@
 <body>
   <nav class="dt w-100 pa2 ph5-ns">
     <div class="dtc v-mid mid-gray dim tr">
-      <img alt="St Albans Ultimate logo" class="dib h2" src="//stalbansultimate.co.uk/img/eagle_logo_s.png">
+      <img alt="St Albans Ultimate logo" class="dib h2" src="eagle_logo_s.png">
     </div>
     <div class="dtc v-mid w-85 pl2">
       <h1 class="white normal f4 dib ma2 mr4-ns">St Albans Training Register</h1>
@@ -62,8 +63,8 @@
         </div>
         <small id="people-desc" class="f6 black-60 db mb2">Search for people (or write their full name if they are not found) and then click add</small>
         <datalist id="peopleList"></datalist>
-        <p>Balances last updated: <span id="lastUpdated"></span></p>
-        <div class="pa0 pv2">
+        <p>Number of people: <span id="total">0</span></p>
+        <div class="pa0 pv1">
           <div class="overflow-auto">
             <table class="f6 w-100 mw8 center" cellspacing="0">
               <thead>
@@ -77,6 +78,7 @@
               </tbody>
             </table>
           </div>
+          <p>Balances last updated: <span id="lastUpdated"></span></p>
         </div>
       </div>
       <div class="mt3"><input id="submit" class="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6" type="submit" value="Submit"></div>
@@ -106,6 +108,7 @@
     var peopleField = document.getElementById('people'); // field where person's name is entered
     var dataList = document.getElementById('peopleList'); // list of people to show in drop down
     var addedPeople = document.getElementById('addedPeople'); // table to show added people
+    var totalField = document.getElementById('total');
 
     // callback when google sheet loads
     function onComplete(data) {
@@ -164,7 +167,7 @@
           balance = "£" + balance;
           if (balance.includes('(')) {
             rowClass = "red";
-            balance = "-£" + balance.substring(2,balance.length-1);
+            balance = "-&pound;" + balance.substring(2,balance.length-1);
           }
           
         }
@@ -176,9 +179,11 @@
           <td class="pa3"><input onClick="removePerson(this, '${name}')" class="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6" type="button" value="Remove"></td>
         </tr>`);
         attendeeList.push(name);
+        totalField.textContent = attendeeList.length;
       }
       // reset the search field
       peopleField.value = "";
+      peopleField.focus();
     };
 
     // remove an attendee
@@ -188,6 +193,7 @@
       element.parentElement.parentElement.remove();
       // delete from attendee list
       attendeeList.splice(attendeeList.indexOf(name), 1);
+      totalField.textContent = attendeeList.length;
     }
 
     // on submit prevent page submit and open email app instead
