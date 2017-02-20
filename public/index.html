@@ -113,10 +113,12 @@
       var lastUpdated = new Date(data.feed.updated.$t);
       document.getElementById("lastUpdated").textContent = lastUpdated.toDateString();
       
+      // only keep the row if the name is not empty
+      var people = data.feed.entry.filter(p => {
+        return p.gsx$firstname.$t.trim() ? true : false;
+      });
       // extract the data we want (full name and balance) and discard the rest
-      var people = data.feed.entry.map(p => {
-        // only keep the row if it's not empty
-        if (p.gsx$firstname.$t.trim()) {
+      people = people.map(p => {
           var name = p.gsx$firstname.$t.trim() + " " + p.gsx$surname.$t.trim();
           var newP = {
             name,
@@ -124,7 +126,6 @@
           };
           peopleMap[name] = newP;
           return newP;
-        }
       });
 
       // sort the names alphabetically
@@ -160,7 +161,7 @@
         var rowClass = "";
         if (peopleMap[name]) {
           balance = peopleMap[name].balance;
-          if (balance < 0) {
+          if (balance.includes('(')) {
             rowClass = "red";
           }
           balance = "£" + balance;
