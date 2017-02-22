@@ -1,5 +1,5 @@
 'use strict';
-/* global Response, caches, URL, fetch */
+/* global Request, Response, caches, URL, fetch */
 
 var CACHE_NAME = 'my-site-cache-v1';
 var urlsToCache = [
@@ -7,7 +7,8 @@ var urlsToCache = [
   '/index.html',
   '/index.js',
   '/datalist-polyfill.js',
-  '/tachyons.css'
+  '/tachyons.css',
+  'https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/2/public/values'
 ];
 
 self.addEventListener('install', function(event) {
@@ -16,7 +17,11 @@ self.addEventListener('install', function(event) {
     caches.open(CACHE_NAME)
     .then(function(cache) {
       console.log('Opened cache');
-      return cache.addAll(urlsToCache);
+      return cache.addAll(urlsToCache.map(function(urlToPrefetch) {
+         return new Request(urlToPrefetch, { mode: 'no-cors' });
+      })).then(function() {
+        console.log('All resources have been fetched and cached.');
+      });
     })
   );
 });
