@@ -49,24 +49,26 @@
           <label for="people" class="f6 b db mb2">People</label>
           <input id="people" list="peopleList" class="f5 f6-ns input-reset ba b--black-20 fl bg-white pa2 lh-solid w-80-l w-75" aria-describedby="people-desc" placeholder="type name..." type="text">
           <input id="addPerson" class="b f5 f6-ns button-reset fl pa2 tc ba bg-animate bg-black-70 hover-bg-black white pointer w-20-l w-25" value="Add" type="button">
-          <small id="people-desc" class="f6 black-60 db mb2">Search for people (or write their full name if they are new)</small>
-          <datalist id="peopleList"></datalist>
-          <p>Number of people: <span id="total">0</span></p>
-          <div class="pa0 pv1">
-            <div class="overflow-auto">
-              <table class="f6 w-100 mw4 center" cellspacing="0">
-                <thead>
-                  <tr class="stripe-dark">
-                    <th class="fw6 tl pa3 bg-white">Name</th>
-                    <th class="fw6 tl pa3 bg-white">Balance</th>
-                    <th class="fw6 tl pa3 bg-white"></th>
-                  </tr>
-                </thead>
-                <tbody id="addedPeople" class="lh-copy">
-                </tbody>
-              </table>
+          <div class="fl"><small id="people-desc" class="f6 black-60 db mb2">Search for people (or write their full name if they are new)</small></div>
+          <div class="fl">
+            <datalist id="peopleList"></datalist>
+            <p>Number of people: <span id="total">0</span></p>
+            <div class="pa0 pv1">
+              <div class="overflow-auto">
+                <table class="f6 w-100 mw4 center" cellspacing="0">
+                  <thead>
+                    <tr class="stripe-dark">
+                      <th class="fw6 tl pa3 bg-white">Name</th>
+                      <th class="fw6 tl pa3 bg-white">Balance</th>
+                      <th class="fw6 tl pa3 bg-white"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="addedPeople" class="lh-copy">
+                  </tbody>
+                </table>
+              </div>
+              <p>Balances last updated: <span id="lastUpdated"></span></p>
             </div>
-            <p>Balances last updated: <span id="lastUpdated"></span></p>
           </div>
         </div>
         <div class="mt3"><input id="submit" class="b ph3 pv2 input-reset ba bg-animate bg-black-70 hover-bg-black white pointer f5 f6-ns" type="submit" value="Submit"></div>
