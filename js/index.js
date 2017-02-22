@@ -1,16 +1,6 @@
+'use strict';
+
 var tempscript = document.createElement("script");
-window.onload = function() {
-  // set the date field to today's date by default
-  document.getElementById('date').valueAsDate = new Date();
-
-  // fetch the data from google sheets
-
-  tempscript.type = "text/javascript";
-  tempscript.id = "tempscript";
-  tempscript.src = "https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/2/public/values?alt=json-in-script&callback=onComplete";
-  document.body.appendChild(tempscript);
-};
-
 window.onload = function() {
   // set the date field to today's date by default
   document.getElementById('date').valueAsDate = new Date();
