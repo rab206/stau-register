@@ -1,18 +1,5 @@
 'use strict';
 
-var tempscript = document.createElement("script");
-window.onload = function() {
-  // set the date field to today's date by default
-  document.getElementById('date').valueAsDate = new Date();
-
-  // fetch the data from google sheets
-
-  tempscript.type = "text/javascript";
-  tempscript.id = "tempscript";
-  tempscript.src = "https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/2/public/values?alt=json-in-script&callback=onComplete";
-  document.body.appendChild(tempscript);
-};
-
 var peopleMap = {}; // object of all people, name and balance
 var peopleList = [];
 var attendeeList = []; // list of all attendees
@@ -20,6 +7,20 @@ var peopleField = document.getElementById('people'); // field where person's nam
 var dataList = document.getElementById('peopleList'); // list of people to show in drop down
 var addedPeople = document.getElementById('addedPeople'); // table to show added people
 var totalField = document.getElementById('total');
+
+document.getElementById('date').valueAsDate = new Date();
+
+var xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/2/public/values?alt=json');
+xhr.onload = function() {
+    if (xhr.status === 200) {
+      onComplete(JSON.parse(xhr.response));
+    }
+    else {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+};
+xhr.send();
 
 // callback when google sheet loads
 function onComplete(data) {
@@ -62,8 +63,6 @@ function onComplete(data) {
   options += "<!--[if lte IE 9]></select><![endif]-->";
   dataList.innerHTML = options;
   peopleField.placeholder = "type name...";
-
-  tempscript.remove();
 
   var datalistSupported = !!(document.createElement('datalist') && window.HTMLDataListElement);
 
