@@ -7,8 +7,7 @@ var urlsToCache = [
   '/index.html',
   '/index.js',
   '/datalist-polyfill.js',
-  '/tachyons.css',
-  'https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/2/public/values'
+  '/tachyons.css'
 ];
 
 self.addEventListener('install', function(event) {
@@ -39,23 +38,19 @@ self.addEventListener('activate', function(event) {
 
 self.addEventListener('fetch', function(event) {
   event.respondWith(
-    fetch(event.request).then(
-      function(response) {
-        // Check if we received a valid response
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          caches.match(event.request)
-            .then(function(response) {
-              // Cache hit - return response
-              if (response) {
-                return response;
-              }
-              return new Response('Sorry the page was not cached and you are offline');
-            });
-        }
-        else {
+    // go to network first
+    fetch(event.request).then(response => {
+      return response;
+    }).catch(() =>
+      caches.match(event.request)
+      .then(function(response) {
+        // Cache hit - return response
+        if (response) {
           return response;
         }
-      }
+        // if no network and cache hit fails then return a dummy response
+        return new Response('Sorry the page was not cached and you are offline');
+      })
     )
   );
 });

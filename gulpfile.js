@@ -22,7 +22,11 @@ gulp.task('minify', function(cb) {
   );
 });
 
-gulp.task('default', ['minify'], function() {
+gulp.task('watch', () => {
+  gulp.watch('js/*.js', ['minify']);
+});
+
+gulp.task('sync', ['minify'], function() {
 
   browserSync({
     files: 'public/**',
