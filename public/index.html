@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>St Albans Training Register</title>
   <link rel="stylesheet" href="tachyons.css" />
+  <!--<link rel="stylesheet" href="https://unpkg.com/tachyons@4.6.1/css/tachyons.min.css" />-->
+
   <link rel="manifest" href="/manifest.json">
   <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
   <style type='text/css'>
@@ -31,51 +33,47 @@
     </div>
   </nav>
   <div class="fl w-100 mv3">
-    <form id="form" class="pa4 black-80">
+    <form id="form" class="pv2 ph4">
       <div class="date">
         <label for="date" class="f6 b db mb2">Session Date <span class="normal black-60">(mandatory)</span></label>
-        <input id="date" required class="input-reset ba b--black-20 pa2 mb2 db w-100" type="date" aria-describedby="date-desc">
-        <small id="date-desc" class="f6 black-60 db mb2">The date of the session.</small>
+        <input id="date" required class="input-reset ba b--black-20 pa2 mb2 db flex f5 f6-ns" type="date" aria-describedby="date-desc">
+        <small id="date-desc" class="dn f6 black-60 mb2">The date of the session.</small>
       </div>
-      <div class="comment">
+      <div class="comment mt3">
         <label for="comment" class="f6 b db mb2">Comment for treasurer <span class="normal black-60">(optional)</span></label>
-        <input id="comment" class="input-reset ba b--black-20 pa2 mb2 db w-100" type="text" aria-describedby="comment-desc">
-        <small id="comment-desc" class="f6 black-60 db mb2">E.g. trials or small pitch only</small>
+        <input id="comment" class="input-reset ba b--black-20 pa2 mb2 db w-100 f5 f6-ns" type="text" aria-describedby="comment-desc" placeholder="E.g. trials or small pitch only">
+        <small id="comment-desc" class="f6 black-60 dn mb2">E.g. trials or small pitch only</small>
       </div>
       <div class="people">
-        <label for="people" class="f6 b db mb2">People</label>
-        <div class="dt">
-          <div class="dtc">
-            <input id="people" list="peopleList" class="input-reset ba b--black-20 pa2 mb2 db w-100" type="text" aria-describedby="people-desc" placeholder="loading people...">
-          </div>
-          <div class="dtc">
-            <div class="mt3"><input id="addPerson" class="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6" type="button" value="Add"></div>
+        <div class="mt3 cf">
+          <label for="people" class="f6 b db mb2">People</label>
+          <input id="people" list="peopleList" class="f5 f6-ns input-reset ba b--black-20 fl bg-white pa2 lh-solid w-80-l w-75" aria-describedby="people-desc" placeholder="type name..." type="text">
+          <input id="addPerson" class="b f5 f6-ns button-reset fl pa2 tc ba bg-animate bg-black-70 hover-bg-black white pointer w-20-l w-25" value="Add" type="button">
+          <small id="people-desc" class="f6 black-60 db mb2">Search for people (or write their full name if they are new)</small>
+          <datalist id="peopleList"></datalist>
+          <p>Number of people: <span id="total">0</span></p>
+          <div class="pa0 pv1">
+            <div class="overflow-auto">
+              <table class="f6 w-100 mw4 center" cellspacing="0">
+                <thead>
+                  <tr class="stripe-dark">
+                    <th class="fw6 tl pa3 bg-white">Name</th>
+                    <th class="fw6 tl pa3 bg-white">Balance</th>
+                    <th class="fw6 tl pa3 bg-white"></th>
+                  </tr>
+                </thead>
+                <tbody id="addedPeople" class="lh-copy">
+                </tbody>
+              </table>
+            </div>
+            <p>Balances last updated: <span id="lastUpdated"></span></p>
           </div>
         </div>
-        <small id="people-desc" class="f6 black-60 db mb2">Search for people (or write their full name if they are new)</small>
-        <datalist id="peopleList"></datalist>
-        <p>Number of people: <span id="total">0</span></p>
-        <div class="pa0 pv1">
-          <div class="overflow-auto">
-            <table class="f6 w-100 mw8 center" cellspacing="0">
-              <thead>
-                <tr class="stripe-dark">
-                  <th class="fw6 tl pa3 bg-white">Name</th>
-                  <th class="fw6 tl pa3 bg-white">Balance</th>
-                  <th class="fw6 tl pa3 bg-white"></th>
-                </tr>
-              </thead>
-              <tbody id="addedPeople" class="lh-copy">
-              </tbody>
-            </table>
-          </div>
-          <p>Balances last updated: <span id="lastUpdated"></span></p>
+        <div class="mt3"><input id="submit" class="b ph3 pv2 input-reset ba bg-animate bg-black-70 hover-bg-black white pointer f5 f6-ns" type="submit" value="Submit"></div>
+        <div id="warning" class="mt3 red dn">
+          <h4 class="mv0">Email has already been opened - <span class="i">Make sure you send the email!</span></h4>
+          <p class="mv0">If you want to update the list then click submit again, otherwise just close this</p>
         </div>
-      </div>
-      <div class="mt3"><input id="submit" class="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6" type="submit" value="Submit"></div>
-      <div id="warning" class="mt3 red dn">
-        <h4 class="mv0">Email has already been opened - <span class="i">Make sure you send the email!</span></h4>
-        <p class="mv0">If you want to update the list then click submit again, otherwise just close this</p>
       </div>
     </form>
   </div>
