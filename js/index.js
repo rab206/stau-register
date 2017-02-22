@@ -8,17 +8,19 @@ var dataList = document.getElementById('peopleList'); // list of people to show 
 var addedPeople = document.getElementById('addedPeople'); // table to show added people
 var totalField = document.getElementById('total');
 
+// initialise the date field to today
 document.getElementById('date').valueAsDate = new Date();
 
+// fetch the data from google spreadsheets
 var xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/2/public/values?alt=json');
 xhr.onload = function() {
-    if (xhr.status === 200) {
-      onComplete(JSON.parse(xhr.response));
-    }
-    else {
-        alert('Request failed.  Returned status of ' + xhr.status);
-    }
+  if (xhr.status === 200) {
+    onComplete(JSON.parse(xhr.response));
+  }
+  else {
+    alert('Request failed.  Returned status of ' + xhr.status);
+  }
 };
 xhr.send();
 
@@ -66,7 +68,7 @@ function onComplete(data) {
 
   var datalistSupported = !!(document.createElement('datalist') && window.HTMLDataListElement);
 
-  if(!datalistSupported) {
+  if (!datalistSupported) {
     var polyfill = document.createElement("script");
     polyfill.type = "text/javascript";
     polyfill.id = "polyfill";
@@ -77,18 +79,43 @@ function onComplete(data) {
   }
 }
 
+// prevent enter key submit of the form
+document.getElementById('form').onkeypress = (e) => {
+  if (e.keyCode == 13) {
+    e.preventDefault();
+  }
+};
+
+// capitalize all words
+function capitalize(name) {
+  if (name) {
+    var words = name.split(' ');
+    name = "";
+    words.map((w) => {
+      name += w[0].toUpperCase() + w.slice(1) + " ";
+    });
+    name = name.trim();
+  }
+  return name;
+}
+
 // add the current person to the attendee list
 document.getElementById('addPerson').onclick = addPerson;
 
+// if the field value matches a person's name in the list
+// then add the person immediately
+// this works on clicking on a element in the list or just typing the full name
 peopleField.oninput = () => {
   var val = peopleField.value;
+  val = capitalize(val);
   if (peopleList.includes(val)) {
     addPerson();
   }
 };
 
+// add a person to the table and to the list of attendees
 function addPerson() {
-  var name = peopleField.value;
+  var name = capitalize(peopleField.value);
   // if they're not already on the list add them
   if (name && !attendeeList.includes(name)) {
     // if the person exists in the spreadsheet we show their balance, if not we show "New person"
@@ -103,16 +130,31 @@ function addPerson() {
         rowClass = "red";
         balance = "-&pound;" + balance.substring(2, balance.length - 1);
       }
-
     }
-    // add the person to the table
-    addedPeople.insertAdjacentHTML("beforeend",
-      `<tr class="stripe-dark ${rowClass}">
+    attendeeList.push(name);
+
+    // sort the attendees
+    attendeeList.sort();
+
+    // keep the table sorted by inserting the user in the right place in the table
+    var index = attendeeList.indexOf(name);
+    if (index > 0) {
+      document.getElementById(attendeeList[index - 1]).insertAdjacentHTML("afterend",
+        `<tr id="${name}" class="stripe-dark ${rowClass}">
           <td class="pa3">${name}</td>
           <td class="pa3">${balance}</td>
           <td class="pa3"><input onClick="removePerson(this, '${name}')" class="b ph3 pv2 input-reset ba b--black bg-white grow pointer f6" type="button" value="Remove"></td>
         </tr>`);
-    attendeeList.push(name);
+    }
+    else {
+      addedPeople.insertAdjacentHTML("afterbegin",
+        `<tr id="${name}" class="stripe-dark ${rowClass}">
+          <td class="pa3">${name}</td>
+          <td class="pa3">${balance}</td>
+          <td class="pa3"><input onClick="removePerson(this, '${name}')" class="b ph3 pv2 input-reset ba b--black bg-white grow pointer f6" type="button" value="Remove"></td>
+        </tr>`);
+    }
+    // add the person to the table
     totalField.textContent = attendeeList.length;
   }
   // reset the search field
