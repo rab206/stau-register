@@ -29,7 +29,8 @@ function onComplete(data) {
   // show the last updated date
   var lastUpdated = new Date(data.feed.updated.$t);
   document.getElementById("lastUpdated").textContent = lastUpdated.toDateString();
-
+  document.getElementById("spreadsheet").href = data.feed.link[0].href;
+  
   // only keep the row if the name is not empty
   var people = data.feed.entry.filter(p => {
     return p.gsx$firstname.$t.trim() ? true : false;
