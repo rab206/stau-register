@@ -38,6 +38,7 @@ function onComplete(data) {
   // extract the data we want (full name and balance) and discard the rest
   people = people.map(p => {
     var name = p.gsx$firstname.$t.trim() + " " + p.gsx$surname.$t.trim();
+    name = name.replace(/\"/g,"'");
     var newP = {
       name,
       balance: p.gsx$balance.$t

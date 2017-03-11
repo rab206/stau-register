@@ -7,3 +7,5 @@ Deployed to netlify.
 In the spreadsheet go to File > Publish to the web, select the sheet and publish it.
 
 The spreadsheet cannot have a blank line in the middle otherwise results after the line will not be returned.
+
+## TODO
