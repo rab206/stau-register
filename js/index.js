@@ -13,7 +13,7 @@ document.getElementById('date').valueAsDate = new Date();
 
 // fetch the data from google spreadsheets
 var xhr = new XMLHttpRequest();
-xhr.open('GET', 'https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/2/public/values?alt=json');
+xhr.open('GET', 'https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/1/public/values?alt=json');
 xhr.onload = function() {
   if (xhr.status === 200) {
     onComplete(JSON.parse(xhr.response));
