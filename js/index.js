@@ -13,13 +13,20 @@ document.getElementById('date').valueAsDate = new Date();
 
 // fetch the data from google spreadsheets
 var xhr = new XMLHttpRequest();
-xhr.open('GET', 'https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/1/public/values?alt=json');
+xhr.open('GET', 'https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/1/public/values?alt=json', true);
 xhr.onload = function() {
   if (xhr.status === 200) {
+    localStorage.setItem('people', xhr.response);
     onComplete(JSON.parse(xhr.response));
   }
   else {
     alert('Request failed.  Returned status of ' + xhr.status);
+  }
+};
+xhr.onerror = function(){
+  var data = localStorage.getItem('people');
+  if(data){
+    onComplete(JSON.parse(data));
   }
 };
 xhr.send();
@@ -200,14 +207,14 @@ Thanks`;
 });
 /* global navigator */
 // add service worker so requests are cached offline and we get add to homescreen functionality
-// if ('serviceWorker' in navigator) {
-//   window.addEventListener('load', function() {
-//     navigator.serviceWorker.register('/sw.js').then(function(registration) {
-//       // Registration was successful
-//       console.log('ServiceWorker registration successful with scope: ', registration.scope);
-//     }).catch(function(err) {
-//       // registration failed :(
-//       console.log('ServiceWorker registration failed: ', err);
-//     });
-//   });
-// }
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }).catch(function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
+}
