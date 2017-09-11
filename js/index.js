@@ -13,7 +13,7 @@ document.getElementById('date').valueAsDate = new Date();
 
 // fetch the data from google spreadsheets
 var xhr = new XMLHttpRequest();
-xhr.open('GET', 'https://spreadsheets.google.com/feeds/list/1j9z1tQwSwxclM-ucThVbraR_JaQcvnwnPoDGFLGUFfU/1/public/values?alt=json', true);
+xhr.open('GET', 'https://spreadsheets.google.com/feeds/list/1930OIvsDqXdQPBVBq5TpwGENVjHrZ11XBeF_WF4t7VY/1/public/values?alt=json', true);
 xhr.onload = function() {
   if (xhr.status === 200) {
     localStorage.setItem('people', xhr.response);
@@ -40,15 +40,17 @@ function onComplete(data) {
   
   // only keep the row if the name is not empty
   var people = data.feed.entry.filter(p => {
-    return p.gsx$firstname.$t.trim() ? true : false;
+    console.log(p.gsx$fullname);
+    return p.gsx$fullname && p.gsx$fullname.$t.trim() && p.gsx$fullname.$t.trim() != '-';
   });
   // extract the data we want (full name and balance) and discard the rest
   people = people.map(p => {
-    var name = p.gsx$firstname.$t.trim() + " " + p.gsx$surname.$t.trim();
+    var name = p.gsx$fullname.$t.trim();
     name = name.replace(/\"/g,"'");
+    name = name.replace(/[ ]{1,}/g," ");
     var newP = {
       name,
-      balance: p.gsx$balance.$t
+      balance: p.gsx$currentbalance.$t
     };
     peopleMap[name] = newP;
     return newP;
@@ -185,7 +187,7 @@ function removePerson(element, name) {
 document.getElementById('form').addEventListener("submit", (e) => {
   // prevent page submit
   e.preventDefault();
-
+  
   // construct the mail to request
   var email = 'treasurer@stalbansultimate.co.uk';
   var date = document.getElementById('date').value;
