@@ -35,6 +35,8 @@ gulp.task('sync', ['minify'], function() {
 
 });
 
+gulp.task('default', ['watch']);
+
 
 
 function log(message) {
