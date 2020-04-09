@@ -15,8 +15,7 @@ var urlsToPrefetch = [
 
 importScripts('serviceworker-cache-polyfill.js');
 
-var version = 'v15';
-var staticCacheName = 'stau-register-v15';
+var staticCacheName = 'stau-register-v18';
 
 self.oninstall = function(event) {
   self.skipWaiting();
